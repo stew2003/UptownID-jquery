@@ -1,0 +1,20 @@
+{
+  "name": "uptownid",
+  "version": "1.0.0",
+  "description": "A website that sells custom shoes",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stew2003/UptownID.git"
+  },
+  "author": "Stewart Morris",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stew2003/UptownID/issues"
+  },
+  "homepage": "https://github.com/stew2003/UptownID#readme"
+}
