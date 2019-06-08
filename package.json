@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/stew2003/UptownID/issues"
   },
-  "homepage": "https://github.com/stew2003/UptownID#readme"
+  "homepage": "https://github.com/stew2003/UptownID#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "cookie-session": "^1.3.3",
+    "express": "^4.17.1",
+    "mustache-express": "^1.2.8"
+  }
 }
