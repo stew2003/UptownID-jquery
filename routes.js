@@ -10,7 +10,7 @@ module.exports = {
 
 		//render the homepage
 		app.get('/', function(req, res){
-			res.end('Hello!');
+			res.render('home.html');
 		});
 	}
 }
