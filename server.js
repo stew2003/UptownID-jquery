@@ -13,6 +13,7 @@ app.engine('html', mustacheExpress());
 app.set('views', __dirname + '/views');
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/views'));
+app.use(express.static(__dirname + '/assets'));
 
 // configure session
 app.use(session({ 

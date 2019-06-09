@@ -1,0 +1,9 @@
+#editor{
+	margin: auto;
+	position: relative;
+	width:60vw;
+}
+
+.draggable_img{
+	position: absolute;
+}
