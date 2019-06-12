@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Admin Portal | UptownID</title>
+
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+	<link rel="stylesheet" type="text/css" href="/css/admin.css">
+
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</head>
+
+<body>
+	<header>
+		<!-- put the navbar info here -->
+	</header>
+	<div class="container">
+		<h1 class="main-header">Admin Portal</h1>
+		<div class="grid-container">
+
+			{{#adminError}}<p>{{adminError}}</p>{{/adminError}}
+
+			<div class="form-wrapper">
+				<h2>Manage Colors</h2>
+
+				<b>Add Color:</b>
+				<form id="addColorForm" action="/newColor" method="POST">
+					<input name="colorName" type="text" autocomplete="off" placeholder="Enter color name...">
+					<input type="file" id="colorIcon" name="colorIcon"/>
+					<input id="submitAddColor" class="submit-button" type="submit" value="Create New Color">
+				</form>
+
+				{{#colorsExist}}
+					<b> Remove Color:</b>
+					<form id="deleteColorForm" action="/removeColor" method="POST">
+						<select name="cid">
+							{{#colors}}
+							<option value="{{cid}}">{{friendlyName}}</option>
+							{{/colors}}
+						</select>
+						<input id="submitDeleteColor" class="delete-buttons" type="submit" value="Delete Color">
+					</form>
+				{{/colorsExist}}
+
+				{{#colorError}}<p>{{colorError}}</p>{{/colorError}}
+			</div>
+
+			<div class="form-wrapper">
+				<h2>Manage Materials</h2>
+
+				<b>Add Color:</b>
+				<form id="addMaterialForm" action="/newMaterial" method="POST">
+					<input name="materialName" type="text" autocomplete="off" placeholder="Enter material name...">
+					<input type="file" id="materialIcon" name="materialIcon"/>
+					<input id="submitAddMaterial" class="submit-button" type="submit" value="Create New Material">
+				</form>
+
+				{{#materialsExist}}
+					<b> Remove Material:</b>
+					<form id="deleteMaterialForm" action="/removeMaterial" method="POST">
+						<select name="mid">
+							{{#materials}}
+							<option value="{{mid}}">{{friendlyName}}</option>
+							{{/materials}}
+						</select>
+						<input id="submitDeleteMaterial" class="delete-buttons" type="submit" value="Delete Color">
+					</form>
+				{{/materialsExist}}
+			</div>
+		</div>
+	</div>
+</body>
+</html>
