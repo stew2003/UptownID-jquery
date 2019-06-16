@@ -1,6 +1,8 @@
 .submit-button {
 	color: white;
-	padding: 5px;
+	border: none;
+ 	box-shadow: none;
+	padding: 0.25vw;
 	border-radius: 3px;
 	background-color: #3399ff;
 	font-size: 13px;
@@ -13,7 +15,9 @@
 
 .delete-buttons {
 	color: white;
-    padding: 5px;
+	border: none;
+ 	box-shadow: none;
+    padding: 0.25vw;
     border-radius: 3px;
     font-size: 13px;
     background-color: #ff3333;
@@ -29,25 +33,25 @@ select {
     font-family: 'Averia Sans Libre';
     font-size: 14px;
     border: none;
-    padding: 2px;
+    padding: 0.125vw;
     border-radius: 3px;
     cursor: pointer;
-    margin-left: 10px;
+    margin-left: 0.5vw;
 }
 
 .grid-container{
 	display: grid;
 	grid-template-columns: auto auto;
 	grid-template-rows: auto auto;
-	grid-column-gap: 50px;
-	grid-row-gap: 50px;
+	grid-column-gap: 2.5vw;
+	grid-row-gap: 2.5vw;
  }
 
  .form-wrapper{
- 	padding:20px;
+ 	padding:1vw;
  	background-color: #FAFAFA;
  	text-align: center;
- 	box-shadow: 0 0 10px #949494;
+ 	box-shadow: 0 0 1vw #949494;
  	border-radius: 25px;
  }
 
@@ -55,7 +59,85 @@ select {
  	margin:0;
  }
 
- .form-wrapper input{
- 	border: none;
- 	box-shadow: none;
+ #shoe-container{
+ 	grid-column-start: 1;
+ 	grid-column-end: 3;
  }
+
+.tabs {
+	width:100%;
+	display:inline-block;
+}
+
+.tab-links{
+	margin-top: 0.5vw;
+	margin-bottom: 0;
+	padding: 0;
+}
+
+.tab-links:after {
+	display:block;
+	clear:both;
+	content:'';
+}
+
+.tab-links li {
+	margin: 0;
+	float:left;
+	list-style:none;
+}
+
+.tab-links a {
+	text-decoration: none;
+	margin: 0;
+	padding:0.5vw 0.75vw;
+	display:inline-block;
+	border-radius:0.15vw 0vw 0vw 0vw;
+	background:#7FB5DA;
+	font-size:16px;
+	font-weight:600;
+	color:#4c4c4c;
+	transition:all linear 0.15s;
+}
+
+.tab-links a:hover {
+	background:#A7CCE5;
+	text-decoration:none;
+}
+
+li.active a, li.active a:hover {
+	background:#FFFFFF;
+	color:#4C4C4C;
+}
+
+/*----- Content of Tabs -----*/
+.tab-content {
+	padding:0.75vw;
+	border-radius:0.15vw;
+	background:#FFFFFF;
+}
+
+.tab {
+	display:none;
+}
+
+.tab.active {
+	display:block;
+}
+
+#shoe-svg{
+	width: 45vw;
+}
+
+path{
+	fill: none;
+	stroke-width: 1px;
+	stroke: black;
+	pointer-events:all;
+}
+
+path:hover{
+	fill: red;
+	stroke-width: 15px;
+	stroke: red;
+}

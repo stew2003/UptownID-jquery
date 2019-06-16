@@ -21,9 +21,9 @@ module.exports = {
 	},
 
 	//add a color to the db
-	addColor: function(name, friendlyName, cb){
+	addColor: function(name, friendlyName, icon_path, cb){
 		if(name && friendlyName){
-			con.query("INSERT INTO colors (name, friendlyName) VALUES (?, ?);", [name, friendlyName], function(err){
+			con.query("INSERT INTO colors (name, friendlyName, icon_path) VALUES (?, ?, ?);", [name, friendlyName, icon_path], function(err){
 				cb(err);
 			});
 		}
@@ -45,9 +45,9 @@ module.exports = {
 	},
 
 	//add a material to the db
-	addMaterial: function(name, friendlyName, cb){
+	addMaterial: function(name, friendlyName, icon_path, cb){
 		if(name && friendlyName){
-			con.query("INSERT INTO materials (name, friendlyName) VALUES (?,?);", [name, friendlyName], function(err){
+			con.query("INSERT INTO materials (name, friendlyName, icon_path) VALUES (?,?,?);", [name, friendlyName, icon_path], function(err){
 				cb(err);
 			});
 		}

@@ -16,12 +16,12 @@ html, body {
 	color: black;
 	font-size: 70px;
 	margin: 0;
-	margin-top: 20px;
+	margin-top: 1vw;
 }
 
 /* container for main heading and sub-container div */
 .container {
-	width: 55%;
+	width: 55vw;
 	margin: auto;
 }
 
@@ -29,10 +29,10 @@ html, body {
 .sub-container {
 	position: relative;
 	width: 100%;
-	padding: 10px;
+	padding: 0.5vw;
 	background-color: #FAFAFA;
 	border-radius: 5px;
-	margin-bottom: 20px;
+	margin-bottom: 1vw;
 	color: white;
-	box-shadow: 0 0 20px #000;
+	box-shadow: 0 0 1vw #000;
 }

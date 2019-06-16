@@ -9,7 +9,14 @@
 	<link rel="stylesheet" type="text/css" href="/css/main.css">
 	<link rel="stylesheet" type="text/css" href="/css/admin.css">
 
+	<!-- include the interactor script -->
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+	<!-- include jquery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<!-- include extra jquery form featurs for ajax for upload -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
+	<!-- include mustache to help render dynamically loaded content -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
 </head>
 
 <body>
@@ -18,18 +25,16 @@
 	</header>
 	<div class="container">
 		<h1 class="main-header">Admin Portal</h1>
+		{{#adminError}}<p>{{adminError}}</p>{{/adminError}}
 		<div class="grid-container">
-
-			{{#adminError}}<p>{{adminError}}</p>{{/adminError}}
-
-			<div class="form-wrapper">
+			<div id="color-container" class="form-wrapper">
 				<h2>Manage Colors</h2>
 
 				<b>Add Color:</b>
-				<form id="addColorForm" action="/newColor" method="POST">
-					<input name="colorName" type="text" autocomplete="off" placeholder="Enter color name...">
-					<input type="file" id="colorIcon" name="colorIcon"/>
-					<input id="submitAddColor" class="submit-button" type="submit" value="Create New Color">
+				<form id="addColorForm" action="/newColor" method="POST" enctype="multipart/form-data">
+					<input name="colorName" type="text" autocomplete="off" placeholder="Enter color name..."/>
+					<input type="file" id="colorIcon" name="colorIcon" accept=".png, .jpeg, .jpg"/>
+					<input id="submitAddColor" class="submit-button" type="submit" value="Create New Color"/>
 				</form>
 
 				{{#colorsExist}}
@@ -47,14 +52,14 @@
 				{{#colorError}}<p>{{colorError}}</p>{{/colorError}}
 			</div>
 
-			<div class="form-wrapper">
+			<div id="material-container" class="form-wrapper">
 				<h2>Manage Materials</h2>
 
 				<b>Add Color:</b>
-				<form id="addMaterialForm" action="/newMaterial" method="POST">
-					<input name="materialName" type="text" autocomplete="off" placeholder="Enter material name...">
-					<input type="file" id="materialIcon" name="materialIcon"/>
-					<input id="submitAddMaterial" class="submit-button" type="submit" value="Create New Material">
+				<form id="addMaterialForm" action="/newMaterial" method="POST" enctype="multipart/form-data">
+					<input name="materialName" type="text" autocomplete="off" placeholder="Enter material name..."/>
+					<input type="file" id="materialIcon" name="materialIcon" accept=".png, .jpegm .jpg"/>
+					<input id="submitAddMaterial" class="submit-button" type="submit" value="Create New Material"/>
 				</form>
 
 				{{#materialsExist}}
@@ -68,8 +73,42 @@
 						<input id="submitDeleteMaterial" class="delete-buttons" type="submit" value="Delete Color">
 					</form>
 				{{/materialsExist}}
+
+				{{#materialError}}<p>{{materialError}}</p>{{/materialError}}
+			</div>
+
+			<div id="shoe-container" class="form-wrapper">
+				<h2>Manage Shoes</h2>
+				<div class="tabs">
+					<ul class="tab-links">
+						<li class="active"><a href="#add-shoe">Add Shoe</a></li>
+						<li><a href="#edit-shoe">Edit Shoe</a></li>
+					</ul>
+
+					<div class="tab-content">
+						<div id="add-shoe" class="tab active">
+							<b>Add Shoe:</b>
+							<form id="addShoeForm" action="/newShoe" method="POST" enctype="multipart/form-data">
+								<input name="shoeName" id="shoeName" type="text" autocomplete="off" placeholder="Enter shoe name..."/>
+								<input name="shoeSvgFile" id="shoeSvgFile" type="file" accept=".svg"/>
+								<input id="submitAddShoe" class="submit-button" type="submit" value="Create New Shoe"/>
+							</form>
+
+							<div id="parts" style="display:none;"></div>
+
+							<object id="shoe-svg"></object>
+						</div>
+						<div id="edit-shoe" class="tab">
+							<b>Edit Shoe:</b>
+							<!-- Js scripty magic here boys -->
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
+
+	<script src="/js/admin.js"></script>
+
 </body>
 </html>

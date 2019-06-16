@@ -2,11 +2,15 @@
 	All routes
 */
 
-var sys = require('./settings.js');
-var auth = require('./auth.js');
+var sys         = require('./settings.js');
+var auth        = require('./auth.js');
 var maintenance = require('./maintenance.js');
-var getters = require('./getters.js');
-var upload = require('./upload.js');
+var getters     = require('./getters.js');
+var upload      = require('./upload.js');
+var exec 		= require('child_process').exec;
+var fs          = require('fs');
+var xml2js      = require('xml2js');
+var parser      = new xml2js.Parser();
 
 module.exports = {
 
@@ -26,6 +30,7 @@ module.exports = {
 			//get any error messages that may have been flashed in.
 			render.adminError = req.flash('adminError');
 			render.colorError = req.flash('colorError');
+			render.materialError = req.flash('materialError');
 
 			//get the colors
 			getters.getColors(function(err, colors){
@@ -61,13 +66,23 @@ module.exports = {
 
 		//handles a post request to add a new color
 		app.post('/newColor', auth.isAdminPOST, upload.uploadColorIcon, function(req, res){
+			//check for errors
+			if(req.adminError){
+				req.flash('adminError', req.adminError);
+				res.redirect('/admin');
+			}
+			else if(req.colorError){
+				req.flash('colorError', req.colorError);
+				res.redirect('/admin');
+			}
 
-			if(req.body.colorName != null){
+			//check if the post request has the valid fields filled out
+			else if(req.body.colorName != null){
 				//create a strict name
 				var name = req.body.colorName.toLowerCase().replace(' ', '_');
 
 				//add a color to the db
-				maintenance.addColor(name, req.body.colorName, function(err){
+				maintenance.addColor(name, req.body.colorName, req.friendly_icon_path, function(err){
 					if(!err){
 						res.redirect('/admin');
 					}
@@ -77,7 +92,7 @@ module.exports = {
 				});
 			}
 			else{
-				error(res, "All required fields must be filled out.");
+				req.flash('colorError', 'Please fill out all the required fields.');
 			}
 		});
 
@@ -85,10 +100,18 @@ module.exports = {
 		app.post('/removeColor', auth.isAdminPOST, function(req, res){
 
 			if(req.body.cid != null){
-				//remove a color from the db
-				maintenance.removeColor(req.body.cid, function(err){
+				//remove the files from the file path
+				exec('rm -rf ' + sys.color_icon_path + '/' + req.body.cid, function(err, stdout, stderr){
 					if(!err){
-						res.redirect('/admin');
+						//remove a color from the db
+						maintenance.removeColor(req.body.cid, function(err){
+							if(!err){
+								res.redirect('/admin');
+							}
+							else{
+								error(res, err);
+							}
+						});
 					}
 					else{
 						error(res, err);
@@ -100,14 +123,26 @@ module.exports = {
 			}
 		});
 
-		app.post('/newMaterial', auth.isAdminPOST, function(req, res){
+		//handles a post request for a new material
+		app.post('/newMaterial', auth.isAdminPOST, upload.uploadMaterialIcon, function(req, res){
 
-			if(req.body.materialName != null){
+			//check for errors
+			if(req.adminError){
+				req.flash('adminError', req.adminError);
+				res.redirect('/admin');
+			}
+			else if(req.materialError){
+				req.flash('materialError', req.materialError);
+				res.redirect('/admin');
+			}
+
+			//check if the post request has the valid fields filled out
+			else if(req.body.materialName != null){
 				//create a strict name
 				var name = req.body.materialName.toLowerCase().replace(' ', '_');
 
 				//add a material to the db
-				maintenance.addMaterial(name, req.body.materialName, function(err){
+				maintenance.addMaterial(name, req.body.materialName, req.friendly_icon_path, function(err){
 					if(!err){
 						res.redirect('/admin');
 					}
@@ -117,17 +152,27 @@ module.exports = {
 				});
 			}
 			else{
-				error(res, "All required fields must be filled out.");
+				req.flash('materialError', "All required fields must be filled out.");
+				res.redirect('/admin');
 			}
 		});
 
+		//handles a post request to remove a material
 		app.post('/removeMaterial', auth.isAdminPOST, function(req, res){
 
 			if(req.body.mid != null){
-				//remove a material from the db
-				maintenance.removeMaterial(req.body.mid, function(err){
+				//remove the files from the file path
+				exec('rm -rf ' + sys.material_icon_path + '/' + req.body.mid, function(err, stdout, stderr){
 					if(!err){
-						res.redirect('/admin');
+						//remove a material from the db
+						maintenance.removeMaterial(req.body.mid, function(err){
+							if(!err){
+								res.redirect('/admin');
+							}
+							else{
+								error(res, err);
+							}
+						});
 					}
 					else{
 						error(res, err);
@@ -137,7 +182,65 @@ module.exports = {
 			else{
 				error(res, "Please select a material to delete.");
 			}
+		});
 
+		//handles the upload of a new shoe svg (post request done with jquery)
+		app.post('/newShoe', auth.isAdminPOST, upload.uploadShoeSvg, function(req, res){
+			 //check for errors
+			 if(req.adminError){
+			 	res.send({adminError: req.adminError});
+			 }
+			 else if(req.shoeError){
+			 	res.send({shoeError: req.shoeError});
+			 }
+
+			 //create a new shoe and parse it
+			 else if(req.body.shoeName != null){
+			 	//create the strict name
+			 	var name = req.body.shoeName.toLowerCase().replace(' ', '_');
+
+			 	//add the shoe to the db
+			 	maintenance.addShoe(name, req.body.shoeName, req.friendly_shoe_path, function(err){
+			 		if(!err){
+			 			//get all of the colors
+			 			getters.getColors(function(err, colors){
+			 				if(!err){
+			 					//get all of the materials
+			 					getters.getMaterials(function(err, materials){
+			 						if(!err){
+			 							//read the svg file
+							 			fs.readFile('./assets' + req.friendly_shoe_path, function(err, file){
+							 				parser.parseString(file, function(err, shoe_info){
+							 					data = {
+							 						colorsExist: colors.length > 0,
+							 						colors: colors,
+							 						materialsExist: materials.length > 0,
+							 						materials: materials,
+							 						friendly_shoe_path: req.friendly_shoe_path,
+							 						shoe_info: shoe_info
+							 					};
+							 					res.send(data);
+							 				});
+							 			});
+			 						}
+			 						else{
+			 							error(res, err);
+			 						}
+			 					});
+			 				}
+			 				else{
+			 					error(res, err);
+			 				}
+			 			});
+			 		}
+			 		else{
+			 			error(res, err);
+			 		}
+			 	});
+			 }
+			 else{
+			 	res.send({shoeError: "Please fill out all required fields."});
+			 }
 		});
 	}
 }

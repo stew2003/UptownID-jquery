@@ -7,3 +7,25 @@
 .draggable_img{
 	position: absolute;
 }
+
+svg, svg * {
+	pointer-events:all;
+}
+
+path{
+	fill: none;
+	stroke: black;
+}
+
+path:hover{
+	fill: green;
+	stroke: red;
+}
+
+object{
+	z-index: -1;
+}
+
+img{
+	z-index: 0;
+}

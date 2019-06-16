@@ -1,6 +1,10 @@
 # Credentials file
 /credentials.js
 
+assets1/
+
+assets/
+
 package-lock.json
 
 # Dependency directories
