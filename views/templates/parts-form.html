@@ -1,0 +1,28 @@
+{{#shoe_paths}}
+<div class="part_container">
+	<form class="addNewPart" action="/newPart" method="POST">
+		<input name="part_id" value="{{part_id}}" type="hidden"/>
+		<input name="shoe_id" value="{{shoe.sid}}" type="hidden"/>
+		<label for="partName">Name: </label>
+		<input name="partName" class="partName" type="text" autocomplete="off" value="{{$.id}}"/>
+		{{#colorsExist}}
+			<label for="cid">Default Color: </label>
+			<select name="cid"> 
+				{{#colors}}
+				<option value="{{cid}}">{{friendlyName}}</option>
+				{{/colors}}
+			</select>
+		{{/colorsExist}}
+		{{#materialsExist}}
+			<label for="mid">Default Material: </label>
+			<select name="mid"> 
+				{{#materials}} 
+				<option value="{{mid}}">{{friendlyName}}</option>
+				{{/materials}}
+			</select>
+		{{/materialsExist}}
+		<input name="save-part" class="submit-button" type="submit" value="Save Part"/>
+	</form>
+</div>
+{{/shoe_paths}}
+{{#partError}}<p class="error">{{partError}}</p>{{/partError}}

@@ -25,7 +25,9 @@
 	</header>
 	<div class="container">
 		<h1 class="main-header">Admin Portal</h1>
-		{{#adminError}}<p>{{adminError}}</p>{{/adminError}}
+		<div id="error-container">
+			{{#adminError}}<p id="adminError">{{adminError}}</p>{{/adminError}}
+		</div>
 		<div class="grid-container">
 			<div id="color-container" class="form-wrapper">
 				<h2>Manage Colors</h2>
@@ -40,7 +42,7 @@
 				{{#colorsExist}}
 					<b> Remove Color:</b>
 					<form id="deleteColorForm" action="/removeColor" method="POST">
-						<select name="cid">
+						<select name="cid" class="icon_select">
 							{{#colors}}
 							<option value="{{cid}}">{{friendlyName}}</option>
 							{{/colors}}
@@ -49,23 +51,24 @@
 					</form>
 				{{/colorsExist}}
 
-				{{#colorError}}<p>{{colorError}}</p>{{/colorError}}
+				{{#colorError}}<p class="error">{{colorError}}</p>{{/colorError}}
+				{{#colorSuccess}}<p class="success">{{colorSuccess}}</p>{{/colorSuccess}}
 			</div>
 
 			<div id="material-container" class="form-wrapper">
 				<h2>Manage Materials</h2>
 
-				<b>Add Color:</b>
+				<b>Add Material:</b>
 				<form id="addMaterialForm" action="/newMaterial" method="POST" enctype="multipart/form-data">
 					<input name="materialName" type="text" autocomplete="off" placeholder="Enter material name..."/>
-					<input type="file" id="materialIcon" name="materialIcon" accept=".png, .jpegm .jpg"/>
+					<input type="file" id="materialIcon" name="materialIcon" accept=".png, .jpeg .jpg"/>
 					<input id="submitAddMaterial" class="submit-button" type="submit" value="Create New Material"/>
 				</form>
 
 				{{#materialsExist}}
 					<b> Remove Material:</b>
 					<form id="deleteMaterialForm" action="/removeMaterial" method="POST">
-						<select name="mid">
+						<select name="mid" class="icon_select">
 							{{#materials}}
 							<option value="{{mid}}">{{friendlyName}}</option>
 							{{/materials}}
@@ -74,7 +77,8 @@
 					</form>
 				{{/materialsExist}}
 
-				{{#materialError}}<p>{{materialError}}</p>{{/materialError}}
+				{{#materialError}}<p class="error">{{materialError}}</p>{{/materialError}}
+				{{#materialSuccess}}<p class="success">{{materialSuccess}}</p>{{/materialSuccess}}
 			</div>
 
 			<div id="shoe-container" class="form-wrapper">
@@ -87,7 +91,7 @@
 
 					<div class="tab-content">
 						<div id="add-shoe" class="tab active">
-							<b>Add Shoe:</b>
+							<h3 id="shoe-title">Add Shoe:</h3>
 							<form id="addShoeForm" action="/newShoe" method="POST" enctype="multipart/form-data">
 								<input name="shoeName" id="shoeName" type="text" autocomplete="off" placeholder="Enter shoe name..."/>
 								<input name="shoeSvgFile" id="shoeSvgFile" type="file" accept=".svg"/>
@@ -95,6 +99,7 @@
 							</form>
 
 							<div id="parts" style="display:none;"></div>
+							<div id="default-img"></div>
 
 							<object id="shoe-svg"></object>
 						</div>
@@ -107,6 +112,8 @@
 			</div>
 		</div>
 	</div>
+
+	<div id="templates" style="display: none;"></div>
 
 	<script src="/js/admin.js"></script>
 

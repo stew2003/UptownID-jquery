@@ -129,15 +129,16 @@ li.active a, li.active a:hover {
 	width: 45vw;
 }
 
-path{
-	fill: none;
-	stroke-width: 1px;
-	stroke: black;
-	pointer-events:all;
+.error{
+	text-align: center;
+	color: red;
 }
 
-path:hover{
-	fill: red;
-	stroke-width: 15px;
-	stroke: red;
+.success{
+	text-align: center;
+	color:  green;
+}
+
+#shoe_title{
+	text-align: center;
 }

@@ -41,6 +41,11 @@ module.exports = {
 									// field processing - add to req.body
 									req.busboy.on('field', function(fieldname, val) {
 										req.body[fieldname] = val;
+
+										//if the file is null (this is different than the other two because of the way ajax sends files)
+										if(fieldname == "colorIcon" && val == ""){
+											req.colorError = 'Please choose a file to upload';
+										}
 									});
 
 									// file processing - route streams properly and add to req.files
@@ -144,6 +149,11 @@ module.exports = {
 									// field processing - add to req.body
 									req.busboy.on('field', function(fieldname, val) {
 										req.body[fieldname] = val;
+
+										//if the file is null (this is different than the other two because of the way ajax sends files)
+										if(fieldname == "materialIcon" && val == ""){
+											req.materialError = 'Please choose a file to upload';
+										}
 									});
 
 									// file processing - route streams properly and add to req.files
@@ -250,7 +260,6 @@ module.exports = {
 										//if the file is null (this is different than the other two because of the way ajax sends files)
 										if(fieldname == "shoeSvgFile" && val == ""){
 											req.shoeError = 'Please choose a file to upload';
-											return next();
 										}
 									});
 
@@ -260,7 +269,7 @@ module.exports = {
 										if(filename){
 											//if the file is too large
 											file.on('limit', function () {
-												req.materialError = 'You may only upload files of maximum size ' + sys.shoe_limits.fileSize / 1024 / 1024 / 8 + 'MB. Please upload a smaller file.';
+												req.shoeError = 'You may only upload files of maximum size ' + sys.shoe_limits.fileSize / 1024 / 1024 / 8 + 'MB. Please upload a smaller file.';
 												return next();
 											});
 

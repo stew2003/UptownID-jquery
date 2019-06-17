@@ -1,0 +1,23 @@
+<h2>Manage Materials</h2>
+
+<b>Add Material:</b>
+<form id="addMaterialForm" action="/newMaterial" method="POST" enctype="multipart/form-data">
+	<input name="materialName" type="text" autocomplete="off" placeholder="Enter material name..."/>
+	<input type="file" id="materialIcon" name="materialIcon" accept=".png, .jpegm .jpg"/>
+	<input id="submitAddMaterial" class="submit-button" type="submit" value="Create New Material"/>
+</form>
+
+{{#materialsExist}}
+	<b> Remove Material:</b>
+	<form id="deleteMaterialForm" action="/removeMaterial" method="POST">
+		<select name="mid" class="icon_select">
+			{{#materials}}
+			<option value="{{mid}}">{{friendlyName}}</option>
+			{{/materials}}
+		</select>
+		<input id="submitDeleteMaterial" class="delete-buttons" type="submit" value="Delete Color">
+	</form>
+{{/materialsExist}}
+
+{{#materialError}}<p class="error">{{materialError}}</p>{{/materialError}}
+{{#materialSuccess}}<p class="success">{{materialSuccess}}</p>{{/materialSuccess}}

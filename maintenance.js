@@ -71,8 +71,13 @@ module.exports = {
 	//add a shoe to the db
 	addShoe: function(name, friendlyName, svg_path, cb){
 		if(name && friendlyName && svg_path){
-			con.query('INSERT INTO shoes (name, friendlyName, svg_path) VALUES (?,?,?);', [name, friendlyName, svg_path], function(err){
-				cb(err);
+			con.query('INSERT INTO shoes (name, friendlyName, svg_path) VALUES (?,?,?); SELECT * FROM shoes WHERE sid = LAST_INSERT_ID();', [name, friendlyName, svg_path], function(err, rows){
+				if(!err && rows !== undefined && rows.length > 1){
+					cb(err, rows[1][0]);
+				}
+				else{
+					cb(err);
+				}
 			});
 		}
 		else{
@@ -82,7 +87,7 @@ module.exports = {
 
 	//add a specific part to the db
 	addPart: function(shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height, cb){
-		if(shoe_id != null && part_id != null && name && default_color != null && default_material != null && img_x != null && img_y != null && img_width != null && img_height != null){
+		if(shoe_id != null && part_id != null && name && default_color != null && default_material != null){
 			con.query('INSERT INTO parts (shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height) VALUES (?,?,?,?,?,?,?,?,?);', [shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height], function(err){
 				cb(err);
 			});

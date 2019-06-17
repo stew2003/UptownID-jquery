@@ -1,0 +1,23 @@
+<h2>Manage Colors</h2>
+
+<b>Add Color:</b>
+<form id="addColorForm" action="/newColor" method="POST" enctype="multipart/form-data">
+	<input name="colorName" type="text" autocomplete="off" placeholder="Enter color name..."/>
+	<input type="file" id="colorIcon" name="colorIcon" accept=".png, .jpeg, .jpg"/>
+	<input id="submitAddColor" class="submit-button" type="submit" value="Create New Color"/>
+</form>
+
+{{#colorsExist}}
+	<b> Remove Color:</b>
+	<form id="deleteColorForm" action="/removeColor" method="POST">
+		<select name="cid" class="icon_select">
+			{{#colors}}
+			<option value="{{cid}}">{{friendlyName}}</option>
+			{{/colors}}
+		</select>
+		<input id="submitDeleteColor" class="delete-buttons" type="submit" value="Delete Color">
+	</form>
+{{/colorsExist}}
+
+{{#colorError}}<p class="error">{{colorError}}</p>{{/colorError}}
+{{#colorSuccess}}<p class="success">{{colorSuccess}}</p>{{/colorSuccess}}

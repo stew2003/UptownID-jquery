@@ -1,0 +1,16 @@
+<h5 id="default_image_title">Set default image for the {{part_name}}</h5>
+
+<form class="addNewDefaultImage" action="/newDefaultImage" method="POST" enctype="multipart/form-data">
+	<label for="default_color">Image color: {{color_name}}</label>
+	<input id="default_color" name="default_color" value="{{cid}}" type="hidden"/>
+
+	<label for="default_material">Image maerial: {{material_name}}</label>	
+	<input id="default_material" name="default_material" value="{{mid}}" type="hidden"/>
+
+	<input id="img_x" name="img_x" value="0" type="text" style="display:none;"/>
+	<input id="img_y" name="img_y" value="0" type="text" style="display:none;"/>
+	<input id="img_width" name="img_width" value="0" type="text" style="display:none;"/>
+	<input id="img_height" name="img_height" value="0" type="text" style="display:none;"/>
+	<input id="default_img" name="default_img" accept=".png, .jpeg .jpg"/>
+	<input class="submit-button" name="default_img_submit" type='submit'/>
+</form>

@@ -13,49 +13,146 @@ $(document).ready(function() {
 		$(this).parent('li').addClass('active').siblings().removeClass('active');
 	});
 
-	$("#addShoeForm").submit(function(e){
+	//when the color form is submitted
+	$(document).on('submit', '#addColorForm', function(e){
+		e.preventDefault();
+		//submit the form through ajax
+		$(this).ajaxSubmit({
+			success: function(res){
+				if(!dealWithAdminError(res)){
+					//get the color form template
+					$.get('/templates/color-form.html', function(html){
+						//render the color template
+						$('#color-container').html(Mustache.render(html, res));
+					}, 'html');
+				}
+			}
+		});
+
+		return false;
+	});
+
+	//when the remove color form is submitted
+	$(document).on('submit', '#deleteColorForm', function(e){
+		e.preventDefault();
+		//submit the form through ajax
+		$(this).ajaxSubmit({
+			success: function(res){
+				if(!dealWithAdminError(res)){
+					//get the color form template
+					$.get('/templates/color-form.html', function(html){
+						//render the color template
+						$('#color-container').html(Mustache.render(html, res));
+					}, 'html');
+				}
+			}
+		});
+
+		return false;
+	});
+
+	//when the add material form is submitted
+	$(document).on('submit', '#addMaterialForm', function(e){
+		e.preventDefault();
+		//submit the form through ajax
+		$(this).ajaxSubmit({
+			success: function(res){
+				if(!dealWithAdminError(res)){
+					//get the color form template
+					$.get('/templates/material-form.html', function(html){
+						//render the color template
+						$('#material-container').html(Mustache.render(html, res));
+					}, 'html');
+				}
+			}
+		});
+
+		return false;
+	});
+
+	//when the remove material form is submitted
+	$(document).on('submit', '#deleteMaterialForm', function(e){
+		e.preventDefault();
+		//submit the form through ajax
+		$(this).ajaxSubmit({
+			success: function(res){
+				if(!dealWithAdminError(res)){
+					//get the color form template
+					$.get('/templates/material-form.html', function(html){
+						//render the color template
+						$('#material-container').html(Mustache.render(html, res));
+					}, 'html');
+				}
+			}
+		});
+
+		return false;
+	});
+
+	//when the new shoe form is submitted
+	$(document).on('submit', "#addShoeForm", function(e){
 
 		e.preventDefault();
 
 		//submit the form through ajax
 		$(this).ajaxSubmit({
 			success: function(res){
-				//hide the add new shoe form
-				$('#addShoeForm').resetForm().hide();
-				
-				//set the data of the object as the newly uploaded file
-				$('#shoe-svg').attr('data', res.friendly_shoe_path);
+				if(!dealWithAdminError(res)){
+					//hide the add new shoe form
+					$('#addShoeForm').resetForm().hide();
+					$('#shoe-title').text("Setup " + res.shoe.friendlyName);
+					
+					//set the data of the object as the newly uploaded file
+					$('#shoe-svg').attr('data', res.friendly_shoe_path);
 
-				var paths = res.shoe_info.svg.g[0].path;
+					$.get('/templates/parts-form.html', function(html){
+						//prepare the part_id incrementer
+						var part_id = 1;
+						res.part_id = function(){return part_id++};
 
-				var partsForms = Mustache.render(
-					'{{#paths}}' +
-					'<form class="addNewPart action="/newPart" method="POST" enctype="multipart/form-data">' +
-						'<input name="partName" class="partName" type="text" autocomplete="off" value="{{$.id}}"/>' +
-						'{{#colorsExist}}' +
-							'<select name="cid">' + 
-								'{{#colors}}' + 
-								'<option value="{{cid}}">{{friendlyName}}</option>' +
-								'{{/colors}}' +
-							'</select>' +
-						'{{/colorsExist}}' +
-						'{{#materialsExist}}' +
-							'<select name="mid">' + 
-								'{{#materials}}' + 
-								'<option value="{{mid}}">{{friendlyName}}</option>' +
-								'{{/materials}}' +
-							'</select>' +
-						'{{/materialsExist}}' +
-					'</form>' + 
-					'{{/paths}}', {paths: paths, colorsExist: res.colorsExist, colors: res.colors, materialsExist: res.materialsExist, materials: res.materials}
+						$('#parts').html(Mustache.render(html, res));
+						$('#parts').css('display', 'block');
+					}, 'html');
+				}
+			}
+		});
 
-				);
+		return false;
+	});
 
-				$('#parts').html(partsForms);
-				$('#parts').css('display', 'block');
+	$(document).on('submit', '.addNewPart', function(e){
+		e.preventDefault();
+
+		var parent = $(this).parent();
+
+		//submit the form through ajax
+		$(this).ajaxSubmit({
+			success: function(res){
+				if(!dealWithAdminError(res)){
+					if(res.partSuccess){
+						$(parent).html('<p class="success">' + res.partSuccess + '</p>');
+						$('#parts').css('display', 'none');
+						
+						$.get('/templates/default-image.html')
+					}
+					else{
+						$(parent).append('<p class="error">' + res.partError + '</p>');
+					}
+				}
 			}
 		});
 
 		return false;
 	});
 });
+
+function dealWithAdminError(res){
+	if(res.adminError){
+		$('#error-container').empty();
+		$('#error-container').append('<p id="adminError">' + res.adminError + '</p>');
+		return true;
+	}
+	else{
+		return false;
+	}
+}
