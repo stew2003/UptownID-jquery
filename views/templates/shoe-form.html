@@ -1,0 +1,6 @@
+<form id="addShoeForm" action="/newShoe" method="POST" enctype="multipart/form-data">
+	<input name="shoeName" id="shoeName" type="text" autocomplete="off" placeholder="Enter shoe name..."/>
+	<input name="shoeSvgFile" id="shoeSvgFile" type="file" accept=".svg"/>
+	<input id="submitAddShoe" class="submit-button" type="submit" value="Create New Shoe"/>
+</form>
+{{#shoeError}}<p class="error">{{shoeError}}</p>{{/shoeError}}

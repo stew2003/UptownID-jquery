@@ -4,6 +4,7 @@
 
 //require the database
 var con = require('./database.js').connection;
+var sys = require('./settings.js');
 
 module.exports = {
 
@@ -12,7 +13,12 @@ module.exports = {
 		//create a new user with the name and email
 		if(name && email){
 			con.query("INSERT INTO admins (name, email) VALUES (?, ?);", [name, email], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot create new admin.");
+				}
 			});		
 		}
 		else{
@@ -24,7 +30,12 @@ module.exports = {
 	addColor: function(name, friendlyName, icon_path, cb){
 		if(name && friendlyName){
 			con.query("INSERT INTO colors (name, friendlyName, icon_path) VALUES (?, ?, ?);", [name, friendlyName, icon_path], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot add material.");
+				}
 			});
 		}
 		else{
@@ -36,7 +47,12 @@ module.exports = {
 	removeColor: function(cid, cb){
 		if(cid != null && cid > 0){
 			con.query('DELETE FROM colors WHERE cid = ?;', [cid], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "This color cannot be deleted as it is currently being used as a default color for a shoe.");
+				}
 			});
 		}
 		else{
@@ -48,7 +64,12 @@ module.exports = {
 	addMaterial: function(name, friendlyName, icon_path, cb){
 		if(name && friendlyName){
 			con.query("INSERT INTO materials (name, friendlyName, icon_path) VALUES (?,?,?);", [name, friendlyName, icon_path], function(err){
-				cb(err);
+				if(!err){
+					cb(err)
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot add material.");
+				}
 			});
 		}
 		else{
@@ -60,7 +81,12 @@ module.exports = {
 	removeMaterial: function(mid, cb){
 		if(mid != null && mid > 0){
 			con.query('DELETE FROM materials WHERE mid = ?;', [mid], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "This material cannot be deleted as it is currently being used as a default material for a shoe.");
+				}
 			});
 		}
 		else{
@@ -76,7 +102,7 @@ module.exports = {
 					cb(err, rows[1][0]);
 				}
 				else{
-					cb(err);
+					cb(sys.dev ? err.sqlMessage : "Cannot add shoe.");
 				}
 			});
 		}
@@ -89,7 +115,12 @@ module.exports = {
 	addPart: function(shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height, cb){
 		if(shoe_id != null && part_id != null && name && default_color != null && default_material != null){
 			con.query('INSERT INTO parts (shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height) VALUES (?,?,?,?,?,?,?,?,?);', [shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot add this part.");
+				}
 			});
 		}
 		else{
@@ -101,7 +132,12 @@ module.exports = {
 	addPartMeta: function(shoe_id, part_id, color_id, material_id, price, image_path){
 		if(shoe_id != null && part_id != null && color_id != null && material_id != null && price != null && image_path){
 			con.query('INSERT INTO part_meta(shoe_id, part_id, color_id, material_id, price, image_path) VALUES (?,?,?,?,?,?);', [shoe_id, part_id, color_id, material_id, price, image_path], function(err){
-				cb(err);
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot add part information.");
+				}
 			});
 		}
 		else{

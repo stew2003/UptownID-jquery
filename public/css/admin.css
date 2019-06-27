@@ -125,6 +125,10 @@ li.active a, li.active a:hover {
 	display:block;
 }
 
+#add-shoe{
+	position: relative;
+}
+
 #shoe-svg{
 	width: 45vw;
 }
@@ -141,4 +145,10 @@ li.active a, li.active a:hover {
 
 #shoe_title{
 	text-align: center;
+}
+
+#refresh-parts{
+	position: absolute;
+	top: 0;
+	right: 0;
 }

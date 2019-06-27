@@ -91,28 +91,36 @@ $(document).ready(function() {
 
 	//when the new shoe form is submitted
 	$(document).on('submit', "#addShoeForm", function(e){
-
 		e.preventDefault();
-
 		//submit the form through ajax
 		$(this).ajaxSubmit({
 			success: function(res){
+				console.log(res);
 				if(!dealWithAdminError(res)){
-					//hide the add new shoe form
-					$('#addShoeForm').resetForm().hide();
-					$('#shoe-title').text("Setup " + res.shoe.friendlyName);
-					
-					//set the data of the object as the newly uploaded file
-					$('#shoe-svg').attr('data', res.friendly_shoe_path);
+					if(!res.shoeError){
+						//hide the add new shoe form
+						$('#addShoeForm').resetForm().hide();
+						$('#shoe-title').text("Setup " + res.shoe.friendlyName);
+						
+						//set the data of the object as the newly uploaded file
+						$('#shoe-svg').attr('data', res.friendly_shoe_path);
 
-					$.get('/templates/parts-form.html', function(html){
-						//prepare the part_id incrementer
-						var part_id = 1;
-						res.part_id = function(){return part_id++};
+						$.get('/templates/parts-form.html', function(html){
+							//prepare the part_id incrementer
+							var part_id = 1;
+							res.part_id = function(){return part_id++};
 
-						$('#parts').html(Mustache.render(html, res));
-						$('#parts').css('display', 'block');
-					}, 'html');
+							$('#parts').html(Mustache.render(html, res));
+							$('#parts').css('display', 'block');
+						}, 'html');
+					}
+					else{
+						//get the template for the shoe form
+						$.get('/templates/shoe-form.html', function(html){
+							//render the shoe form template (with the err)
+							$('#shoe-form-container').html(Mustache.render(html, res));
+						}, 'html');
+					}
 				}
 			}
 		});
@@ -133,7 +141,9 @@ $(document).ready(function() {
 						$(parent).html('<p class="success">' + res.partSuccess + '</p>');
 						$('#parts').css('display', 'none');
 						
-						$.get('/templates/default-image.html')
+						$.get('/templates/default-image.html', function(html){
+							
+						});
 					}
 					else{
 						$(parent).append('<p class="error">' + res.partError + '</p>');

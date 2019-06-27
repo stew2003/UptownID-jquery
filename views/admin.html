@@ -17,6 +17,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.2/jquery.form.min.js"></script>
 	<!-- include mustache to help render dynamically loaded content -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+	<!-- include fontawesome icons -->
+	<script src="https://kit.fontawesome.com/4fc5b88703.js"></script>
 </head>
 
 <body>
@@ -92,11 +94,15 @@
 					<div class="tab-content">
 						<div id="add-shoe" class="tab active">
 							<h3 id="shoe-title">Add Shoe:</h3>
-							<form id="addShoeForm" action="/newShoe" method="POST" enctype="multipart/form-data">
-								<input name="shoeName" id="shoeName" type="text" autocomplete="off" placeholder="Enter shoe name..."/>
-								<input name="shoeSvgFile" id="shoeSvgFile" type="file" accept=".svg"/>
-								<input id="submitAddShoe" class="submit-button" type="submit" value="Create New Shoe"/>
-							</form>
+
+							<div id="shoe-form-container">
+								<form id="addShoeForm" action="/newShoe" method="POST" enctype="multipart/form-data">
+									<input name="shoeName" id="shoeName" type="text" autocomplete="off" placeholder="Enter shoe name..."/>
+									<input name="shoeSvgFile" id="shoeSvgFile" type="file" accept=".svg"/>
+									<input id="submitAddShoe" class="submit-button" type="submit" value="Create New Shoe"/>
+								</form>
+								{{#shoeError}}<p class="error">{{showError}}</p>{{/shoeError}}
+							</div>
 
 							<div id="parts" style="display:none;"></div>
 							<div id="default-img"></div>

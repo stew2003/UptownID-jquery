@@ -258,15 +258,15 @@ module.exports = {
 										req.body[fieldname] = val;
 
 										//if the file is null (this is different than the other two because of the way ajax sends files)
-										if(fieldname == "shoeSvgFile" && val == ""){
-											req.shoeError = 'Please choose a file to upload';
+										if(val == ""){
+											req.shoeError = 'Please fill out all required fields';
 										}
 									});
 
 									// file processing - route streams properly and add to req.files
 									req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
 										//if the file has a name (if a file is actually uploaded)
-										if(filename){
+										if(filename && !req.shoeError){
 											//if the file is too large
 											file.on('limit', function () {
 												req.shoeError = 'You may only upload files of maximum size ' + sys.shoe_limits.fileSize / 1024 / 1024 / 8 + 'MB. Please upload a smaller file.';

@@ -24,13 +24,13 @@ module.exports = {
 	getColor: function(cid, cb){
 		con.query('SELECT * FROM colors WHERE cid = ?;', [cid], function(err, rows){
 			if(!err && rows !== undefined && rows.length > 0){
-
+				cb(err, rows[0]);
 			}
 			else{
-				cb(sys.dev ? err : "There was an error getting the ")
+				cb(sys.dev ? err.sqlMessage : "There was an error getting the ")
 			}
 		});
-	}
+	},
 
 	//get all materials from the database
 	getMaterials: function(cb){
@@ -51,7 +51,7 @@ module.exports = {
 				cb(err, rows[0]);
 			}
 			else{
-				cb(sys.dev ? err : "Unable to get information for shoe.");
+				cb(sys.dev ? err.sqlMessage : "Unable to get information for shoe.");
 			}
 		});
 	}

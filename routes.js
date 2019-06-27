@@ -261,7 +261,7 @@ module.exports = {
 							mid: req.body.mid,
 
 						}
-						res.send({part_id: req.body.part_id, partSuccess: });
+						res.send(render);
 					}
 					else{
 						res.send({partError: err});
