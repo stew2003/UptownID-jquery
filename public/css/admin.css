@@ -150,5 +150,21 @@ li.active a, li.active a:hover {
 #refresh-parts{
 	position: absolute;
 	top: 0;
-	right: 0;
+	right: 5vw;
+}
+
+.after_img{
+	display: none;
+}
+
+#default-img{
+	width: 10vw;
+}
+
+.draggable_img{
+	position: absolute;
+}
+
+#shoe-svg-container{
+	position: relative;
 }

@@ -1,9 +1,9 @@
-<div id="refresh-parts"><i class="fas fa-redo-alt fa-sm"></i></div>
+<div id="refresh-parts"><i class="fas fa-redo-alt fa-m"></i></div>
 {{#shoe_paths}}
-<div class="part_container">
+<div class="part-container">
 	<form class="addNewPart" action="/newPart" method="POST">
-		<input name="part_id" value="{{part_id}}" type="hidden"/>
-		<input name="shoe_id" value="{{shoe.sid}}" type="hidden"/>
+		<input id="part_id" name="part_id" value="{{part_id}}" type="hidden"/>
+		<input id="shoe_id" name="shoe_id" value="{{shoe.sid}}" type="hidden"/>
 		<label for="partName">Name: </label>
 		<input name="partName" class="partName" type="text" autocomplete="off" value="{{$.id}}"/>
 		{{#colorsExist}}

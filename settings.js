@@ -21,6 +21,9 @@ module.exports = {
 	//the base path for shoes
 	shoe_path: './assets/shoes',
 
+	//the base path for the parts
+	parts_path: './assets/parts',
+
 	//in dev mode
 	dev: true
 }

@@ -23,7 +23,6 @@ module.exports = {
 
 		//render the admin page
 		app.get('/admin', auth.isAdminGET, function(req, res){
-
 			//get the default render object for the page
 			var render = defRender(req);
 
@@ -197,19 +196,32 @@ module.exports = {
 									if(!err){
 										//read the svg file
 							 			fs.readFile('./assets' + shoe.svg_path, function(err, file){
-							 				parser.parseString(file, function(err, shoe_info){
-							 					//create the default render object
-							 					var render = {
-							 						colorsExist: colors.length > 0,
-							 						colors: colors,
-							 						materialsExist: materials.length > 0,
-							 						materials: materials,
-							 						friendly_shoe_path: req.friendly_shoe_path,
-							 						shoe: shoe,
-							 						shoe_paths: shoe_info.svg.g[0].path
-							 					};
-							 					res.send(render);
-							 				});
+							 				if(!err){
+							 					parser.parseString(file, function(err, shoe_info){
+								 					//create the default render object
+								 					var render = {
+								 						colorsExist: colors.length > 0,
+								 						colors: colors,
+								 						materialsExist: materials.length > 0,
+								 						materials: materials,
+								 						friendly_shoe_path: req.friendly_shoe_path,
+								 						shoe: shoe,
+								 					};
+
+								 					if(shoe_info.svg.g[0].path.length > 0){
+								 						render.shoe_paths = shoe_info.svg.g[0].path;
+								 					}
+								 					else{
+								 						render.shoeError = "The shoe svg file is not formatted correctly.";
+								 					}
+
+								 					res.send(render);
+								 					
+								 				});
+							 				}
+							 				else{
+							 					res.send({colorsExist: colors.length > 0, colors: colors, materialsExist: false, partError: sys.dev ? err : "There was an error reading the shoe file."})
+							 				}
 							 			});
 									}
 									else{
@@ -232,18 +244,96 @@ module.exports = {
 			 }
 		});
 
+		//refreshes the new parts page
+		app.post('/refreshParts', auth.isAdminPOST, function(req, res){
+			if(req.body.remainingIndexes && req.body.shoe_id){
+				//get the shoe
+				getters.getShoe(req.body.shoe_id, function(err, shoe){
+					if(!err){
+						//get all of the colors
+						getters.getColors(function(err, colors){
+							if(!err){
+								//get all of the materials
+								getters.getMaterials(function(err, materials){
+									if(!err){
+										//read the svg file
+										fs.readFile('./assets' + shoe.svg_path, function(err, file){
+											if(!err){
+							 					parser.parseString(file, function(err, shoe_info){
+								 					//create the default render object
+								 					var render = {
+								 						colorsExist: colors.length > 0,
+								 						colors: colors,
+								 						materialsExist: materials.length > 0,
+								 						materials: materials,
+								 						friendly_shoe_path: req.friendly_shoe_path,
+								 						shoe: shoe,
+								 					};
+
+								 					if(shoe_info.svg.g[0].path.length > 0){
+								 						render.shoe_paths = [];
+								 						for(var i = 0; i < req.body.remainingIndexes.length; i++){
+								 							render.shoe_paths.push(shoe_info.svg.g[0].path[req.body.remainingIndexes[i]]);
+														}
+								 					}
+								 					else{
+								 						render.shoeError = "The shoe svg file is not formatted correctly.";
+								 					}
+
+								 					res.send(render);
+								 					
+								 				});
+							 				}
+							 				else{
+							 					res.send({colorsExist: colors.length > 0, colors: colors, materialsExist: false, partError: sys.dev ? err : "There was an error reading the shoe file."})
+							 				}
+										});
+									}
+									else{
+										res.send({colorsExist: colors.length > 0, colors: colors, materialsExist: false, partError: err});
+									}
+								});
+							}
+							else{
+								res.send({colorsExist: false, materialsExist: false, partError: err});
+							}
+						});
+					}
+					else{
+						res.send({colorsExist: false, materialsExist: false, partError: err});
+					}
+					
+				});
+
+			}
+			else{
+				res.send({partError: "No parts to refresh"});
+			}
+		});
+
+		//creating a new part
 		app.post('/newPart', auth.isAdminPOST, function(req, res){
 			//if the part has a name
-			console.log(req.body);
 			if(req.body.partName != null && req.body.shoe_id != null && req.body.part_id != null && req.body.cid != null && req.body.mid != null){
 				//add the part to the db
 				maintenance.addPart(req.body.shoe_id, req.body.part_id, req.body.partName, req.body.cid, req.body.mid, null, null, null, null, function(err){
 					if(!err){
-						getters.getColor(req.body.cid, function(err){
+						//get the color info of the submitted color
+						getters.getColor(req.body.cid, function(err, color){
 							if(!err){
-								getters.getMaterial(req.body.mid, function(err){
+								//get the material info of the submitted material
+								getters.getMaterial(req.body.mid, function(err, material){
 									if(!err){
-
+										//create the render object
+										var render = {
+											part_id: req.body.part_id,
+											shoe_id: req.body.shoe_id,
+											part_name: req.body.partName,
+											partSuccess: 'The part \"' + req.body.partName + '\" was succesfully added.',
+											color: color,
+											material: material
+										}
+										res.send(render);
 									}
 									else{
 										res.send({partError: err});
@@ -254,24 +344,43 @@ module.exports = {
 								res.send({partError: err});
 							}
 						});
-						var render = {
-							part_id: req.body.part_id,
-							partSuccess: "Part was succesfully added.",
-							cid: req.body.cid,
-							mid: req.body.mid,
-
-						}
-						res.send(render);
 					}
 					else{
 						res.send({partError: err});
 					}
-
 				});
 			}
 			else{
 				res.send({partError: "Please fill out all fields."});
 			}
+		});
+
+		//sets a default image for a part
+		app.post('/newDefaultImage', auth.isAdminPOST, upload.uploadDefaultImg, function(req, res){
+			//edit the part with the updated default value
+			maintenance.editPart(req.body.shoe_id, req.body.part_id, req.body.part_name, req.body.default_color, req.body.default_material, req.body.img_x, req.body.img_y, req.body.img_width, req.body.img_height, function(err){
+				if(!err){
+					//add a part meta with the default color, material, x, y, width, height, and path.
+					maintenance.addPartMeta(req.body.shoe_id, req.body.part_id, req.body.default_color, req.body.default_material, req.body.img_x, req.body.img_y, req.body.img_width, req.body.img_height, req.body.price, req.friendly_part_path, function(err){
+						if(!err){
+							res.send({
+								partMetaSuccess: "The defaults for this part have been succesfully set.", 
+								friendly_part_path: req.friendly_part_path, 
+								img_x: req.body.img_x, 
+								img_y: req.body.img_y, 
+								img_width: req.body.img_width, 
+								img_height: req.body.img_height
+							});
+						}
+						else{
+							res.send({partMetaError: err});
+						}
+					});
+				}
+				else{
+					res.send({partMetaError: err});
+				}
+			});
 		});
 	}
 }

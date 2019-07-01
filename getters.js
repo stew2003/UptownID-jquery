@@ -27,7 +27,7 @@ module.exports = {
 				cb(err, rows[0]);
 			}
 			else{
-				cb(sys.dev ? err.sqlMessage : "There was an error getting the ")
+				cb(sys.dev ? err.sqlMessage : "There was an error getting the color.");
 			}
 		});
 	},
@@ -40,6 +40,18 @@ module.exports = {
 			}
 			else{
 				cb("Unable to retrieve material information.");
+			}
+		});
+	},
+
+	//get a specific material based off of a cid.
+	getMaterial: function(mid, cb){
+		con.query('SELECT * FROM materials WHERE mid = ?;', [mid], function(err, rows){
+			if(!err && rows !== undefined && rows.length > 0){
+				cb(err, rows[0]);
+			}
+			else{
+				cb(sys.dev ? err.sqlMessage : "There was an error getting the color.");
 			}
 		});
 	},

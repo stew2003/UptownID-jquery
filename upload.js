@@ -10,8 +10,9 @@ var con = require('./database.js').connection;
 // middleware: prepares filesystem and dumps files encoded in form
 module.exports = {
 
-	 //for uploading an new icon to go along with a new color
-	 uploadColorIcon: function(req, res, next){
+	//for uploading an new icon to go along with a new color
+	uploadColorIcon: function(req, res, next){
+	 	resetErrors(req);
 	 	//find the next auto incremented cid
 	 	con.query('SELECT auto_increment AS next_cid FROM INFORMATION_SCHEMA.TABLES WHERE table_name = "colors";', function(err, next_cid){
 	 		if(!err && next_cid[0].next_cid !== undefined){
@@ -120,6 +121,7 @@ module.exports = {
 	},
 
 	uploadMaterialIcon: function(req, res, next){
+		resetErrors(req);
 		//find the next auto increment mid for the materials
 		con.query('SELECT auto_increment AS next_mid FROM INFORMATION_SCHEMA.TABLES WHERE table_name = "materials";', function(err, next_mid){
 	 		if(!err && next_mid[0].next_mid !== undefined){
@@ -227,6 +229,7 @@ module.exports = {
 	},
 
 	uploadShoeSvg: function(req, res, next){
+		resetErrors(req);
 		//find the next auto increment mid for the materials
 		con.query('SELECT auto_increment AS next_sid FROM INFORMATION_SCHEMA.TABLES WHERE table_name = "shoes";', function(err, next_sid){
 	 		if(!err && next_sid[0].next_sid !== undefined){
@@ -242,7 +245,7 @@ module.exports = {
 	 					//create the directory
 		 				mkdirp(req.shoe_path, {mode: 0770}, function(err, made) {
 		 					if(!err){
-		 						var bb = busboy({limits: sys.shoe_limits});
+		 						var bb = busboy({headers: req.headers, limits: sys.shoe_limits});
 		 						bb(req, res, function() {
 		 							//if busboy is malfunctioning
 									if (!req.busboy) {
@@ -314,22 +317,113 @@ module.exports = {
 								});
 		 					}
 		 					else{
-		 						req.adminError = sys.dev ? 'Mkdirp error: ' + err : 'Something went wrong. Try to create color again.';
+		 						req.adminError = sys.dev ? 'Mkdirp error: ' + err : 'Something went wrong. Try to create shoe again.';
 								return next();
 		 					}
 		 				});
 	 				}
 	 				else{
-	 					req.adminError = sys.dev ? 'Exec error: ' + err : 'Something went wrong. Try to create color again.';
+	 					req.adminError = sys.dev ? 'Exec error: ' + err : 'Something went wrong. Try to create shoe again.';
 						return next()
 	 				}
 	 			});
 
 	 		}
 	 		else{
-	 			req.adminError = sys.dev ? 'Mysql error: ' + err : 'Something went wrong. Try to create color again.';
+	 			req.adminError = sys.dev ? 'Mysql error: ' + err : 'Something went wrong. Try to create shoe again.';
 				return next();
 	 		}
 	 	});
+	},
+
+	//upload a default image
+	uploadDefaultImg: function(req, res, next){
+		resetErrors(req);
+		var bb = busboy({limits: sys.part_limits});
+		bb(req, res, function() {
+			//if busboy is malfunctioning
+			if (!req.busboy) {
+				req.adminError = sys.dev ? 'Busboy is not in the req object' : 'Something went wrong. Try to add part image again.';
+				return next();
+			}
+
+			req.files = [];
+			var files = 0, finished = false;
+
+			// field processing - add to req.body
+			req.busboy.on('field', function(fieldname, val) {
+				req.body[fieldname] = val;
+			});
+
+			// file processing - route streams properly and add to req.files
+			req.busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+				//if the file is too large
+				file.on('limit', function () {
+					req.partMetaError = 'You may only upload files of maximum size ' + sys.part_limits.fileSize / 1024 / 1024 / 8 + 'MB. Please upload a smaller file.';
+					return next();
+				});
+
+				files++;
+
+				//generate the part paths
+				req.part_path = sys.parts_path + '/' + req.body.shoe_id + '/' + req.body.default_color + '/' + req.body.default_material
+
+	 			//remove anything that might be in that icon path
+	 			exec('rm -rf ' + req.part_path + '/*', function (err, stdout, stderr) {
+	 				if(!err){
+	 					//create the directory
+		 				mkdirp(req.part_path, {mode: 0770}, function(err, made) {
+		 					if(!err){
+		 						req.part_path =req.part_path + '/' + filename;
+		 						req.friendly_part_path =req.part_path.replace('./assets', '');
+
+		 						//write the file to the path
+								fstream = fs.createWriteStream(req.part_path);
+								file.pipe(fstream);
+
+								fstream.on('close', function () {
+									req.files.push(filename);
+									files--;
+									if (!files && finished){
+										return next();
+									}
+								});
+		 					}
+		 					else{
+		 						req.adminError = sys.dev ? 'Mkdirp error: ' + err : 'Something went wrong. Try to upload image again.';
+		 					}
+		 				});
+		 			}
+		 			else{
+		 				req.adminError = sys.dev ? 'Exec error: ' + err : 'Something went wrong. Try to upload image again.';
+		 			}
+		 		});
+			});
+
+			// too many files?
+			req.busboy.on('filesLimit', function() {
+				req.partMetaError = 'You may only upload a maximum of ' + sys.part_limits.files + ' files.';
+				return next();
+			});
+
+			// continue only when all form data received
+			req.busboy.on('finish', function(){
+				finished = true;
+				if(!files){
+					return next();
+				}
+			});
+			req.pipe(req.busboy);
+		});
 	}
+}
+
+//reset all of the session errors
+function resetErrors(req){
+	req.adminError    = null;
+	req.colorError    = null;
+	req.materialError = null;
+	req.shoeError     = null;
+	req.partError     = null;
+	req.partMetaError = null;
 }

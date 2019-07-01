@@ -114,7 +114,7 @@ module.exports = {
 	//add a specific part to the db
 	addPart: function(shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height, cb){
 		if(shoe_id != null && part_id != null && name && default_color != null && default_material != null){
-			con.query('INSERT INTO parts (shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height) VALUES (?,?,?,?,?,?,?,?,?);', [shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height], function(err){
+			con.query('INSERT INTO parts (shoe_id, part_id, name, default_color, default_material, default_x, default_y, default_width, default_height) VALUES (?,?,?,?,?,?,?,?,?);', [shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height], function(err){
 				if(!err){
 					cb(err);
 				}
@@ -128,10 +128,27 @@ module.exports = {
 		}
 	},
 
+	//edit a part
+	editPart: function(shoe_id, part_id, name, default_color, default_material, img_x, img_y, img_width, img_height, cb){
+		if(shoe_id != null && part_id != null && name && default_color != null && default_material != null){
+			con.query('UPDATE parts SET name=?, default_color=?, default_material=?, default_x=?, default_y=?, default_width=?, default_height=? WHERE shoe_id=? AND part_id=?;', [name, default_color, default_material, img_x, img_y, img_width, img_height, shoe_id, part_id], function(err){
+				if(!err){
+					cb(err);
+				}
+				else{
+					cb(sys.dev ? err.sqlMessage : "Cannot edit this part.");
+				}
+			});
+		}
+		else{
+			cb(sys.dev ? "Edit part error required fields not filled out" : "All required fields must be filled out.");
+		}
+	},
+
 	//add meta data to a part
-	addPartMeta: function(shoe_id, part_id, color_id, material_id, price, image_path){
-		if(shoe_id != null && part_id != null && color_id != null && material_id != null && price != null && image_path){
-			con.query('INSERT INTO part_meta(shoe_id, part_id, color_id, material_id, price, image_path) VALUES (?,?,?,?,?,?);', [shoe_id, part_id, color_id, material_id, price, image_path], function(err){
+	addPartMeta: function(shoe_id, part_id, color_id, material_id, img_x, img_y, img_width, img_height, price, image_path, cb){
+		if(shoe_id != null && part_id != null && color_id != null && material_id != null && img_x != null && img_y != null && img_width != null && img_height != null && price != null && image_path){
+			con.query('INSERT INTO part_meta(shoe_id, part_id, color_id, material_id, img_x, img_y, img_width, img_height, price, image_path) VALUES (?,?,?,?,?,?,?,?,?,?);', [shoe_id, part_id, color_id, material_id, img_x, img_y, img_width, img_height, price, image_path], function(err){
 				if(!err){
 					cb(err);
 				}
