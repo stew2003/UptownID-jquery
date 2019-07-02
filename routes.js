@@ -13,7 +13,7 @@ var xml2js      = require('xml2js');
 var parser      = new xml2js.Parser();
 
 module.exports = {
-
+	//initialize the routes with the app
 	init: function(app) {
 
 		//render the homepage
@@ -48,12 +48,12 @@ module.exports = {
 							res.render('admin.html', render);
 						}
 						else{
-							error(res, err);
+							res.render('admin.html', {adminError: err});
 						}
 					});
 				}
 				else{
-					error(res, err);
+					res.render('admin.html', {adminError: err});
 				}
 			});
 		});

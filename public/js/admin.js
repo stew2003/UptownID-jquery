@@ -179,10 +179,14 @@ $(document).ready(function() {
 					success: function(res){
 						if(!dealWithAdminError(res)){
 							if(!res.partMetaError){
+								//hide this form
 								$('.addNewDefaultImage').css('display', 'none').empty();
+								//show the list of parts again
 								$('#parts').css('display', 'block');
+								//reset the draggable image
 								$('.draggable_img').remove();
 								$('#shoe-svg-container').append('<img class="draggable_img" id="default-img"/>');
+								//add the image permanently to the shoe
 								$('#shoe-svg-container').append('<img class="part-img" src="' + res.friendly_part_path +'" style="position: absolute; width:' + res.img_width +'; height:' + res.img_height + '; transform: translate(' + res.img_x + ', ' + res.img_y +');"/>');
 							}
 							else{
@@ -272,7 +276,7 @@ $(document).ready(function() {
 							$('#img_height').val(target.style.height).attr('value', target.style.width);
 						}
 					});
-
+					//show the image
 					$('.draggable_img').css('display', 'block');
 			}
 			else{
